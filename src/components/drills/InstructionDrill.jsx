@@ -34,14 +34,34 @@ const InstructionDrill = ({ steps, onComplete, onBack }) => {
 };
 
 const styles = {
-  container: { maxWidth: '800px', margin: '0 auto', padding: '20px', fontFamily: "'Hind Siliguri', 'Segoe UI', sans-serif" },
-  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' },
+  container: { 
+    maxWidth: '800px', 
+    margin: '0 auto', 
+    padding: '20px', 
+    fontFamily: "'Hind Siliguri', 'Segoe UI', sans-serif",
+    minHeight: '100vh',
+    display: 'flex',
+    flexDirection: 'column'
+  },
+  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', flexWrap: 'wrap', gap: '10px' },
   backBtn: { background: 'transparent', border: '1px solid #ccc', padding: '8px 15px', borderRadius: '5px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' },
-  instructionCard: { background: 'white', padding: '50px 30px', borderRadius: '15px', boxShadow: '0 10px 30px rgba(0,0,0,0.08)', textAlign: 'center', minHeight: '400px', display: 'flex', flexDirection: 'column', alignItems: 'center' },
-  instructionContent: { fontSize: '18px', color: '#555', maxWidth: '600px', marginBottom: '40px', lineHeight: '1.6' },
-  footerNav: { display: 'flex', gap: '20px' },
-  btnPrimary: { padding: '10px 30px', background: '#1e88e5', color: 'white', border: 'none', borderRadius: '50px', cursor: 'pointer', fontSize: '16px', display: 'flex', alignItems: 'center', gap: '10px' },
-  btnSecondary: { padding: '10px 30px', background: '#f5f5f5', color: '#555', border: 'none', borderRadius: '50px', cursor: 'pointer', fontSize: '16px', display: 'flex', alignItems: 'center', gap: '10px' },
+  instructionCard: { 
+    background: 'white', 
+    padding: '40px 25px', 
+    borderRadius: '15px', 
+    boxShadow: '0 10px 30px rgba(0,0,0,0.08)', 
+    textAlign: 'center', 
+    minHeight: '400px', 
+    display: 'flex', 
+    flexDirection: 'column', 
+    alignItems: 'center',
+    flex: 1,
+    overflowY: 'auto'
+  },
+  instructionContent: { fontSize: '17px', color: '#555', maxWidth: '600px', marginBottom: '30px', lineHeight: '1.6' },
+  footerNav: { display: 'flex', gap: '15px', flexWrap: 'wrap', justifyContent: 'center' },
+  btnPrimary: { padding: '10px 25px', background: '#1e88e5', color: 'white', border: 'none', borderRadius: '50px', cursor: 'pointer', fontSize: '15px', display: 'flex', alignItems: 'center', gap: '8px' },
+  btnSecondary: { padding: '10px 25px', background: '#f5f5f5', color: '#555', border: 'none', borderRadius: '50px', cursor: 'pointer', fontSize: '15px', display: 'flex', alignItems: 'center', gap: '8px' },
 };
 
 export default InstructionDrill;

@@ -3,9 +3,17 @@ import React from 'react';
 const HandGuide = ({ activeFinger, hand, targetKey }) => {
   const isLeft = hand === 'left';
 
+  const normalizeKey = (k) => {
+    if (k === undefined || k === null) return '';
+    const s = String(k);
+    if (s === ' ') return 'space';
+    if (s === '\n' || s === '\r\n') return 'enter';
+    return s.trim().toLowerCase();
+  };
+
   // Key Mapping (নাম্বার সহ)
   const keyMap = isLeft ? {
-    pinky: ['1', 'Q', 'A', 'Z'],
+    pinky: ['1', 'Q', 'A', 'Z', 'Tab'],
     ring: ['2', 'W', 'S', 'X'],
     middle: ['3', 'E', 'D', 'C'],
     index: ['4', '5', 'R', 'T', 'F', 'G', 'V', 'B'],
@@ -15,17 +23,36 @@ const HandGuide = ({ activeFinger, hand, targetKey }) => {
     index: ['6', '7', 'Y', 'U', 'H', 'J', 'N', 'M'],
     middle: ['8', 'I', 'K', ','],
     ring: ['9', 'O', 'L', '.'],
-    pinky: ['0', 'P', ';', '/', "'", '-']
+    pinky: ['0', 'P', ';', '/', "'", '-', '[', ']', 'Enter', 'Backspace', '\n']
   };
 
   const isActiveFinger = (fingerName) => {
     if (!activeFinger) return false;
-    return activeFinger.toLowerCase().includes(fingerName);
+    const fingerParts = activeFinger.toLowerCase().split('-');
+    // Check if this hand matches AND finger matches
+    if (fingerParts.length === 2) {
+      const [fingerHand, finger] = fingerParts;
+      if (isLeft && fingerHand === 'left' && finger === fingerName) return true;
+      if (!isLeft && fingerHand === 'right' && finger === fingerName) return true;
+      return false;
+    }
+    // For thumb (Space key) - both hands can highlight
+    if (fingerName === 'thumb' && activeFinger.toLowerCase() === 'thumb') return true;
+    return false;
   };
 
   const isTargetKey = (key) => {
-    if (!targetKey) return false;
-    return key.toLowerCase() === targetKey.toLowerCase();
+    if (targetKey === undefined || targetKey === null || targetKey === '') return false;
+    const t = normalizeKey(targetKey);
+    const k = normalizeKey(key);
+    // Map labels used inside HandGuide
+    const mapLabel = (x) => {
+      if (x === 'space') return 'space';
+      if (x === 'enter' || x === '\n') return 'enter';
+      if (x === 'backspace') return 'backspace';
+      return x;
+    };
+    return mapLabel(k) === mapLabel(t);
   };
 
   // স্টাইল
@@ -34,8 +61,8 @@ const HandGuide = ({ activeFinger, hand, targetKey }) => {
   const nailStyle = { fill: 'none', stroke: '#333', strokeWidth: '1', opacity: '0.4' };
   
   // টেক্সট হাইলাইট স্টাইল (ফন্ট সাইজ বাড়ানো হয়েছে)
-  const normalTextStyle = { fill: '#555', fontSize: '11px', fontWeight: 'bold' };
-  const targetTextStyle = { fill: '#d32f2f', fontSize: '14px', fontWeight: '900' };
+  const normalTextStyle = { fill: '#555', fontSize: '12px', fontWeight: 'bold' };
+  const targetTextStyle = { fill: '#d32f2f', fontSize: '15px', fontWeight: '900' };
 
   // Finger Component
   const Finger = ({ name, d, nailD, textX, textY, keys }) => {
@@ -68,7 +95,7 @@ const HandGuide = ({ activeFinger, hand, targetKey }) => {
 
   return (
     <div style={{ margin: '0 10px', textAlign: 'center' }}>
-      <svg width="240" height="300" viewBox="0 0 240 300">
+  <svg width="210" height="260" viewBox="0 0 240 300">
         
         {/* ==================== বাম হাত (LEFT HAND) ==================== */}
         {isLeft && (
@@ -120,6 +147,11 @@ const HandGuide = ({ activeFinger, hand, targetKey }) => {
               nailD="M220,190 Q225,200 220,210"
               textX="215" textY="200" keys={keyMap.thumb}
             />
+
+            {/* হাতের লেবেল (ভেতরে) */}
+            <text x="100" y="200" textAnchor="middle" style={{ fill: '#999', fontSize: '16px', fontWeight: 'bold', opacity: 0.5 }}>
+              বাম হাত
+            </text>
           </g>
         )}
 
@@ -173,14 +205,15 @@ const HandGuide = ({ activeFinger, hand, targetKey }) => {
               nailD="M185,60 Q197,53 210,60"
               textX="197" textY="80" keys={keyMap.pinky}
             />
+
+            {/* হাতের লেবেল (ভেতরে) */}
+            <text x="115" y="200" textAnchor="middle" style={{ fill: '#999', fontSize: '16px', fontWeight: 'bold', opacity: 0.5 }}>
+              ডান হাত
+            </text>
           </g>
         )}
 
       </svg>
-      
-      <div style={{ fontWeight: 'bold', color: '#555', marginTop: '5px' }}>
-        {isLeft ? 'বাম হাত' : 'ডান হাত'}
-      </div>
     </div>
   );
 };

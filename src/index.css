@@ -8,14 +8,42 @@
 /* পুরো স্ক্রিন দখল করার জন্য */
 html, body, #root {
   width: 100%;
-  height: 100%;
+  height: 100vh;
   margin: 0;
   padding: 0;
-  overflow-x: hidden; /* ডানে বামে স্ক্রল বন্ধ */
+  overflow: hidden; /* সম্পূর্ণ scroll বন্ধ */
+  position: fixed;
+  top: 0;
+  left: 0;
 }
 
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: white;
   color: #333;
+  overflow: hidden;
+}
+
+/* Input focus করলে scroll prevent */
+input:focus {
+  scroll-margin: 0;
+}
+
+/* Prevent any scrolling */
+html {
+  overflow: hidden;
+  touch-action: none;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  html, body {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  html, body {
+    font-size: 13px;
+  }
 }

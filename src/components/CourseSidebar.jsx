@@ -56,15 +56,19 @@ const styles = {
     display: 'flex',
     flexDirection: 'column',
     height: '100vh',
-    boxShadow: '2px 0 5px rgba(0,0,0,0.05)'
+    boxShadow: '2px 0 5px rgba(0,0,0,0.05)',
+    overflow: 'hidden',
+    flexShrink: 0
   },
   header: {
     background: '#1565c0',
     padding: '20px',
-    textAlign: 'center'
+    textAlign: 'center',
+    flexShrink: 0
   },
   listContainer: {
     overflowY: 'auto',
+    overflowX: 'hidden',
     flex: 1,
     padding: '10px 0'
   },
@@ -78,7 +82,8 @@ const styles = {
   icon: {
     marginRight: '10px',
     display: 'flex',
-    alignItems: 'center'
+    alignItems: 'center',
+    flexShrink: 0
   },
   dot: {
     width: '10px',
@@ -88,7 +93,8 @@ const styles = {
   },
   text: {
     fontSize: '13px',
-    lineHeight: '1.4'
+    lineHeight: '1.4',
+    flex: 1
   }
 };
 

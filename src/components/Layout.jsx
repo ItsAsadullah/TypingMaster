@@ -5,13 +5,16 @@ import CourseSidebar from './CourseSidebar'; // নতুন সাইডবা�
 
 const Layout = () => {
   const location = useLocation();
-  const params = useParams(); // URL থেকে ID পাওয়ার জন্য (যদিও এখানে সরাসরি কাজ করবে না Layout এ)
+  const params = useParams(); // URL থেকে ID পাওয়ার জন্য (যদিও এখানে সরাসরি কাজ করবে না Layout এ)
   
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
   const [isSidebarOpen, setSidebarOpen] = useState(false);
 
   // আমরা চেক করব ইউজার এখন কোর্সের ভেতরে আছে কিনা
   const isCoursePage = location.pathname.includes('/course/');
+  
+  // চেক করব ড্রিল/লেসন পেজে আছে কিনা (যেখানে sidebar লুকাতে হবে)
+  const isLessonDrillPage = location.pathname.includes('/lesson/');
   
   // URL থেকে লেসন আইডি বের করার লজিক (Simple string split)
   const currentLessonId = isCoursePage ? location.pathname.split('/')[2] : null;
@@ -26,13 +29,14 @@ const Layout = () => {
     <div style={styles.container}>
       
       {/* লজিক: 
-         ১. যদি মোবাইল হয় -> মোবাইল মেনু বাটন দেখাবে।
-         ২. যদি পিসি হয় এবং কোর্স পেজ হয় -> CourseSidebar দেখাবে (বাম পাশে)।
-         ৩. যদি পিসি হয় এবং ড্যাশবোর্ড হয় -> MainSidebar দেখাবে (বাম/ডান পাশে আপনার পছন্দমত)।
+         ১. যদি লেসন/ড্রিল পেজে থাকি -> কোন সাইডবার দেখাবে না (full focus)
+         ২. যদি মোবাইল হয় -> মোবাইল মেনু বাটন দেখাবে।
+         ৩. যদি পিসি হয় এবং কোর্স পেজ হয় -> CourseSidebar দেখাবে (বাম পাশে)।
+         ৪. যদি পিসি হয় এবং ড্যাশবোর্ড হয় -> MainSidebar দেখাবে (বাম/ডান পাশে আপনার পছন্দমত)।
       */}
 
-      {/* বাম পাশের সাইডবার (Course Sidebar or Main Sidebar) */}
-      {!isMobile && (
+      {/* বাম পাশের সাইডবার (Course Sidebar or Main Sidebar) - শুধুমাত্র ড্রিল পেজে নয় */}
+      {!isMobile && !isLessonDrillPage && (
         <aside style={styles.sidebarContainer}>
           {isCoursePage ? (
             <CourseSidebar currentLessonId={currentLessonId} />
@@ -42,9 +46,13 @@ const Layout = () => {
         </aside>
       )}
 
-      {/* মেইন কন্টেন্ট এরিয়া */}
-      <main style={styles.mainContent}>
-        {isMobile && (
+      {/* মেইন কন্টেন্ট এরিয়া */}
+      <main style={{
+        ...styles.mainContent,
+        background: isLessonDrillPage ? '#ffffff' : '#eef2f6',
+        padding: isLessonDrillPage ? '0' : '20px'
+      }}>
+        {isMobile && !isLessonDrillPage && (
           <button style={styles.mobileMenuBtn} onClick={() => setSidebarOpen(true)}>
             <FaBars /> মেনু
           </button>
@@ -52,8 +60,8 @@ const Layout = () => {
         <Outlet />
       </main>
 
-      {/* মোবাইল সাইডবার ড্রয়ার */}
-      {isMobile && isSidebarOpen && (
+      {/* মোবাইল সাইডবার ড্রয়ার - শুধুমাত্র ড্রিল পেজে নয় */}
+      {isMobile && isSidebarOpen && !isLessonDrillPage && (
         <>
           <div style={styles.overlay} onClick={() => setSidebarOpen(false)}></div>
           <div style={styles.mobileDrawer}>
@@ -95,17 +103,97 @@ const NavItem = ({ to, icon, label, active }) => (
 );
 
 const styles = {
-  container: { display: 'flex', height: '100vh', background: '#f0f2f5', overflow: 'hidden' },
-  sidebarContainer: { height: '100%', zIndex: 10 },
-  mainContent: { flex: 1, padding: '20px', overflowY: 'auto', background: '#eef2f6' },
-  mainSidebar: { width: '240px', background: '#fff', height: '100%', borderRight: '1px solid #ddd' },
-  mobileDrawer: { position: 'fixed', top: 0, left: 0, height: '100%', background: '#fff', zIndex: 1000, boxShadow: '2px 0 5px rgba(0,0,0,0.2)' },
-  overlay: { position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 900 },
-  mobileMenuBtn: { padding: '8px 15px', background: '#1976d2', color: 'white', border: 'none', borderRadius: '5px', marginBottom: '15px' },
-  closeBtn: { padding: '10px', textAlign: 'right', borderBottom: '1px solid #eee' },
-  navList: { listStyle: 'none', padding: '10px' },
-  link: { display: 'flex', alignItems: 'center', padding: '12px 15px', textDecoration: 'none', borderRadius: '5px', fontSize: '15px' },
-  logoArea: { padding: '20px', borderBottom: '1px solid #eee' }
+  container: { 
+    display: 'flex', 
+    height: '100vh', 
+    width: '100vw',
+    background: '#f0f2f5', 
+    overflow: 'hidden',
+    position: 'fixed',
+    top: 0,
+    left: 0
+  },
+  sidebarContainer: { 
+    height: '100vh', 
+    zIndex: 10,
+    overflowY: 'auto',
+    overflowX: 'hidden',
+    flexShrink: 0
+  },
+  mainContent: { 
+    flex: 1, 
+    padding: '20px', 
+    overflowY: 'auto',
+    overflowX: 'hidden', 
+    background: '#eef2f6',
+    height: '100vh'
+  },
+  mainSidebar: { 
+    width: '240px', 
+    background: '#fff', 
+    height: '100%', 
+    borderRight: '1px solid #ddd',
+    overflowY: 'auto'
+  },
+  mobileDrawer: { 
+    position: 'fixed', 
+    top: 0, 
+    left: 0, 
+    height: '100vh', 
+    width: '280px',
+    background: '#fff', 
+    zIndex: 1000, 
+    boxShadow: '2px 0 5px rgba(0,0,0,0.2)',
+    overflowY: 'auto'
+  },
+  overlay: { 
+    position: 'fixed', 
+    top: 0, 
+    left: 0, 
+    right: 0, 
+    bottom: 0, 
+    background: 'rgba(0,0,0,0.5)', 
+    zIndex: 900 
+  },
+  mobileMenuBtn: { 
+    padding: '8px 15px', 
+    background: '#1976d2', 
+    color: 'white', 
+    border: 'none', 
+    borderRadius: '5px', 
+    marginBottom: '15px',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px'
+  },
+  closeBtn: { 
+    padding: '10px', 
+    textAlign: 'right', 
+    borderBottom: '1px solid #eee',
+    cursor: 'pointer',
+    display: 'flex',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    gap: '5px'
+  },
+  navList: { 
+    listStyle: 'none', 
+    padding: '10px' 
+  },
+  link: { 
+    display: 'flex', 
+    alignItems: 'center', 
+    padding: '12px 15px', 
+    textDecoration: 'none', 
+    borderRadius: '5px', 
+    fontSize: '15px',
+    transition: 'all 0.2s ease'
+  },
+  logoArea: { 
+    padding: '20px', 
+    borderBottom: '1px solid #eee' 
+  }
 };
 
 export default Layout;

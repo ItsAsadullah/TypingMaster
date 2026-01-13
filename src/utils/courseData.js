@@ -4,13 +4,13 @@ export const courseData = [
     title: "Lesson 1: The Home Row",
     status: "active", // locked, active, completed
     modules: [
-      { id: "1.1", title: "Touch Typing Basics", type: "instruction", duration: "2 min" },
-      { id: "1.2", title: "New keys: Home Row", type: "key_drill", duration: "3 min" },
-      { id: "1.3", title: "Drill: asdf jkl;", type: "word_drill", duration: "5 min" },
+  { id: "1.1", title: "Touch Typing Basics", type: "instruction", duration: "2 min" },
+  { id: "1.2", title: "New keys: Home Row", type: "key_drill", duration: "5 min" },
+  { id: "1.3", title: "Understanding Results", type: "instruction", duration: "2 min" },
       { id: "1.4", title: "Word Drill: Home Row", type: "word_drill", duration: "5 min" },
-      { id: "1.5", title: "Paragraph Drill", type: "paragraph", duration: "5 min" },
-      { id: "1.6", title: "Blind Typing Test", type: "test", duration: "Unlimited" },
-      { id: "1.7", title: "Review", type: "review", duration: "2 min" }
+      { id: "1.5", title: "Enter Key শেখা", type: "instruction", duration: "2 min" },
+      { id: "1.6", title: "Paragraph Drill", type: "paragraph", duration: "5 min" },
+      { id: "1.7", title: "Blind Typing Test", type: "test", duration: "Unlimited" }
     ]
   },
   {

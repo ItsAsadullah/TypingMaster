@@ -1,0 +1,866 @@
+﻿import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useUser } from '../context/UserContext';
+import { FaChevronDown, FaChevronUp, FaSignOutAlt, FaUser, FaBook, FaTrophy, FaFire, FaClock, FaPlay, FaLock, FaChartLine, FaKeyboard, FaBolt, FaCheckCircle } from 'react-icons/fa';
+import logo from '../assets/images/Logo.png';
+
+const Dashboard = () => {
+  const navigate = useNavigate();
+  const { currentUser, logout } = useUser();
+  const [activeCourse, setActiveCourse] = useState('fast-touch');
+
+  const toggleCourse = (courseId) => {
+    setActiveCourse(activeCourse === courseId ? null : courseId);
+  };
+
+  const handleLogout = () => {
+    if (window.confirm('আপনি কি লগআউট করতে চান?')) {
+      logout();
+      navigate('/');
+    }
+  };
+
+  const completedCount = currentUser?.completedDrills?.length || 0;
+  const currentLesson = currentUser?.currentLesson || 1;
+
+  return (
+    <div style={styles.pageWrapper}>
+      {/* Hero Header Section */}
+      <div style={styles.heroSection}>
+        <div style={styles.navBar}>
+          <div style={styles.navLeft}>
+            <img src={logo} alt="TechHat" style={styles.logoImg} />
+            <div style={styles.brandInfo}>
+              <h1 style={styles.brandName}>TechHat Typing Master</h1>
+              <p style={styles.brandTagline}>আপনার টাইপিং দক্ষতা বৃদ্ধি করুন</p>
+            </div>
+          </div>
+          <div style={styles.navRight}>
+            <div style={styles.userCard}>
+              <div style={styles.userAvatar}>
+                <FaUser size={14} />
+              </div>
+              <div>
+                <div style={styles.userName}>{currentUser?.name || 'User'}</div>
+                <div style={styles.userStatus}>Active Learner</div>
+              </div>
+            </div>
+            <button onClick={handleLogout} style={styles.logoutBtn}>
+              <FaSignOutAlt size={14} />
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Welcome Section */}
+        <div style={styles.welcomeSection}>
+          <div style={styles.welcomeContent}>
+            <h2 style={styles.welcomeTitle}>
+              স্বাগতম, <span style={styles.welcomeName}>{currentUser?.name}!</span>
+            </h2>
+            <p style={styles.welcomeDesc}>
+              আজকের অনুশীলন শুরু করুন এবং আপনার টাইপিং স্কিল নিয়ে যান পরবর্তী লেভেলে
+            </p>
+          </div>
+          <div style={styles.quickActionCard}>
+            <div style={styles.quickActionIcon}>
+              <FaPlay size={28} />
+            </div>
+            <h3 style={styles.quickActionTitle}>Continue Learning</h3>
+            <p style={styles.quickActionDesc}>Lesson {currentLesson} এ ফিরে যান</p>
+            <button onClick={() => navigate('/course/1')} style={styles.quickActionBtn}>
+              চালিয়ে যান →
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Stats Overview */}
+      <div style={styles.statsSection}>
+        <div style={styles.statCard}>
+          <div style={styles.statIconWrapper} data-color="green">
+            <FaCheckCircle size={28} />
+          </div>
+          <div style={styles.statContent}>
+            <div style={styles.statValue}>{completedCount}</div>
+            <div style={styles.statLabel}>Completed Drills</div>
+            <div style={styles.statProgress}>
+              <div style={{...styles.statProgressBar, width: `${Math.min(100, completedCount * 2)}%`, background: '#4caf50'}} />
+            </div>
+          </div>
+        </div>
+
+        <div style={styles.statCard}>
+          <div style={styles.statIconWrapper} data-color="blue">
+            <FaBook size={28} />
+          </div>
+          <div style={styles.statContent}>
+            <div style={styles.statValue}>Lesson {currentLesson}</div>
+            <div style={styles.statLabel}>Current Progress</div>
+            <div style={styles.statProgress}>
+              <div style={{...styles.statProgressBar, width: `${(currentLesson / 12) * 100}%`, background: '#2196f3'}} />
+            </div>
+          </div>
+        </div>
+
+        <div style={styles.statCard}>
+          <div style={styles.statIconWrapper} data-color="orange">
+            <FaFire size={28} />
+          </div>
+          <div style={styles.statContent}>
+            <div style={styles.statValue}>{completedCount > 5 ? 'On Fire!' : 'Keep Going!'}</div>
+            <div style={styles.statLabel}>Status</div>
+            <div style={styles.statProgress}>
+              <div style={{...styles.statProgressBar, width: `${Math.min(100, (completedCount / 50) * 100)}%`, background: '#ff9800'}} />
+            </div>
+          </div>
+        </div>
+
+        <div style={styles.statCard}>
+          <div style={styles.statIconWrapper} data-color="purple">
+            <FaKeyboard size={28} />
+          </div>
+          <div style={styles.statContent}>
+            <div style={styles.statValue}>12 Lessons</div>
+            <div style={styles.statLabel}>Total Available</div>
+            <div style={styles.statProgress}>
+              <div style={{...styles.statProgressBar, width: '100%', background: '#9c27b0'}} />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Main Content */}
+      <div style={styles.mainContent}>
+        <div style={styles.sectionHeader}>
+          <div>
+            <h2 style={styles.sectionTitle}>📚 কোর্স সিলেক্ট করুন</h2>
+            <p style={styles.sectionSubtitle}>আপনার টাইপিং জার্নি শুরু করুন সঠিক কোর্স দিয়ে</p>
+          </div>
+          <select style={styles.langSelector}>
+            <option>🇬🇧 English</option>
+            <option>🇧🇩 বাংলা (শীঘ্রই)</option>
+          </select>
+        </div>
+
+        {/* Course Card 1 - Fast Touch Typing */}
+        <div style={styles.courseCard}>
+          <div style={styles.courseCardHeader} onClick={() => toggleCourse('fast-touch')}>
+            <div style={styles.courseLeft}>
+              <div style={{...styles.courseNumber, background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}>
+                01
+              </div>
+              <div style={styles.courseTitleSection}>
+                <h3 style={styles.courseTitle}>
+                  <FaKeyboard style={{marginRight: '10px', color: '#667eea'}} />
+                  ফাস্ট টাচ টাইপিং কোর্স
+                </h3>
+                <p style={styles.courseSubtitle}>Fast Touch Typing Course - Beginner to Advanced</p>
+              </div>
+            </div>
+            <div style={styles.courseRight}>
+              <div style={styles.courseStatus}>
+                {completedCount > 0 ? (
+                  <span style={{...styles.statusBadge, background: '#e3f2fd', color: '#1976d2'}}>
+                    <FaChartLine size={12} /> In Progress
+                  </span>
+                ) : (
+                  <span style={{...styles.statusBadge, background: '#f3e5f5', color: '#7b1fa2'}}>
+                    <FaPlay size={12} /> Start Now
+                  </span>
+                )}
+              </div>
+              {activeCourse === 'fast-touch' ? <FaChevronUp size={20} /> : <FaChevronDown size={20} />}
+            </div>
+          </div>
+
+          {activeCourse === 'fast-touch' && (
+            <div style={styles.courseBody}>
+              <div style={styles.courseDescription}>
+                <div style={styles.descriptionBox}>
+                  <h4 style={styles.descBoxTitle}>📖 কোর্স সম্পর্কে</h4>
+                  <p style={styles.descBoxText}>
+                    এই কোর্সে আপনি কীবোর্ডের অক্ষরের অবস্থান এবং বিরাম চিহ্নগুলো মুখস্থ করবেন। 
+                    প্রতিটি লেসন সাবধানে ডিজাইন করা হয়েছে যাতে আপনি ধাপে ধাপে শিখতে পারেন।
+                  </p>
+                </div>
+                
+                <div style={styles.courseMetrics}>
+                  <div style={styles.metricItem}>
+                    <FaClock size={18} style={{color: '#2196f3'}} />
+                    <div>
+                      <div style={styles.metricLabel}>সময়কাল</div>
+                      <div style={styles.metricValue}>৩-৫ ঘণ্টা</div>
+                    </div>
+                  </div>
+                  <div style={styles.metricItem}>
+                    <FaBook size={18} style={{color: '#4caf50'}} />
+                    <div>
+                      <div style={styles.metricLabel}>মোট লেসন</div>
+                      <div style={styles.metricValue}>১২টি</div>
+                    </div>
+                  </div>
+                  <div style={styles.metricItem}>
+                    <FaTrophy size={18} style={{color: '#ff9800'}} />
+                    <div>
+                      <div style={styles.metricLabel}>সম্পন্ন</div>
+                      <div style={styles.metricValue}>{completedCount} ড্রিল</div>
+                    </div>
+                  </div>
+                  <div style={styles.metricItem}>
+                    <FaBolt size={18} style={{color: '#9c27b0'}} />
+                    <div>
+                      <div style={styles.metricLabel}>লেভেল</div>
+                      <div style={styles.metricValue}>Beginner</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div style={styles.courseActions}>
+                <button onClick={() => navigate('/course/1')} style={styles.primaryActionBtn}>
+                  <FaPlay size={14} />
+                  <span>{completedCount > 0 ? 'চালিয়ে যান' : 'শুরু করুন'}</span>
+                </button>
+                <button style={styles.secondaryActionBtn}>
+                  <FaBook size={14} />
+                  <span>সিলেবাস দেখুন</span>
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Course Card 2 - Speed Building */}
+        <div style={{...styles.courseCard, opacity: 0.7}}>
+          <div style={styles.courseCardHeader}>
+            <div style={styles.courseLeft}>
+              <div style={{...styles.courseNumber, background: 'linear-gradient(135deg, #f57c00 0%, #ef6c00 100%)'}}>
+                02
+              </div>
+              <div style={styles.courseTitleSection}>
+                <h3 style={styles.courseTitle}>
+                  <FaBolt style={{marginRight: '10px', color: '#f57c00'}} />
+                  স্পিড বিল্ডিং কোর্স
+                </h3>
+                <p style={styles.courseSubtitle}>Speed Building Course - Advanced Level</p>
+              </div>
+            </div>
+            <div style={styles.courseRight}>
+              <span style={{...styles.statusBadge, background: '#fce4ec', color: '#c2185b'}}>
+                <FaLock size={12} /> Coming Soon
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div style={styles.footer}>
+        <p style={styles.footerText}>© 2026 TechHat Typing Master • Made with ❤️ in Bangladesh</p>
+      </div>
+    </div>
+  );
+};
+
+const styles = {
+  pageWrapper: {
+    minHeight: '100vh',
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    fontFamily: "'Hind Siliguri', 'Segoe UI', sans-serif",
+    paddingBottom: '40px'
+  },
+
+  // Hero Section
+  heroSection: {
+    background: 'rgba(255, 255, 255, 0.98)',
+    borderRadius: '0 0 30px 30px',
+    boxShadow: '0 10px 40px rgba(0,0,0,0.15)',
+    marginBottom: '30px'
+  },
+
+  navBar: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '20px 40px',
+    borderBottom: '1px solid rgba(0,0,0,0.08)'
+  },
+
+  navLeft: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '15px'
+  },
+
+  logoImg: {
+    width: '50px',
+    height: '50px',
+    borderRadius: '12px',
+    boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+  },
+
+  brandInfo: {
+    lineHeight: '1.4'
+  },
+
+  brandName: {
+    margin: 0,
+    fontSize: '24px',
+    fontWeight: '700',
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent'
+  },
+
+  brandTagline: {
+    margin: '2px 0 0 0',
+    fontSize: '13px',
+    color: '#666'
+  },
+
+  navRight: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '15px'
+  },
+
+  userCard: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    padding: '10px 18px',
+    background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%)',
+    borderRadius: '12px',
+    border: '1px solid rgba(102, 126, 234, 0.2)'
+  },
+
+  userAvatar: {
+    width: '36px',
+    height: '36px',
+    borderRadius: '50%',
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: 'white'
+  },
+
+  userName: {
+    fontSize: '14px',
+    fontWeight: '600',
+    color: '#333'
+  },
+
+  userStatus: {
+    fontSize: '11px',
+    color: '#666'
+  },
+
+  logoutBtn: {
+    padding: '10px 20px',
+    background: '#dc3545',
+    color: 'white',
+    border: 'none',
+    borderRadius: '10px',
+    cursor: 'pointer',
+    fontSize: '14px',
+    fontWeight: '600',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '8px',
+    transition: 'all 0.3s ease',
+    boxShadow: '0 4px 12px rgba(220, 53, 69, 0.3)'
+  },
+
+  // Welcome Section
+  welcomeSection: {
+    display: 'grid',
+    gridTemplateColumns: '1fr auto',
+    gap: '30px',
+    padding: '40px',
+    alignItems: 'center'
+  },
+
+  welcomeContent: {
+    maxWidth: '600px'
+  },
+
+  welcomeTitle: {
+    fontSize: '32px',
+    fontWeight: '700',
+    color: '#333',
+    margin: '0 0 15px 0',
+    lineHeight: '1.3'
+  },
+
+  welcomeName: {
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent'
+  },
+
+  welcomeDesc: {
+    fontSize: '16px',
+    color: '#666',
+    lineHeight: '1.6',
+    margin: 0
+  },
+
+  quickActionCard: {
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    padding: '30px',
+    borderRadius: '20px',
+    textAlign: 'center',
+    color: 'white',
+    minWidth: '280px',
+    boxShadow: '0 10px 30px rgba(102, 126, 234, 0.4)'
+  },
+
+  quickActionIcon: {
+    width: '60px',
+    height: '60px',
+    background: 'rgba(255,255,255,0.2)',
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: '0 auto 15px auto'
+  },
+
+  quickActionTitle: {
+    fontSize: '20px',
+    fontWeight: '700',
+    margin: '0 0 8px 0'
+  },
+
+  quickActionDesc: {
+    fontSize: '14px',
+    opacity: 0.9,
+    margin: '0 0 20px 0'
+  },
+
+  quickActionBtn: {
+    background: 'white',
+    color: '#667eea',
+    padding: '12px 30px',
+    borderRadius: '10px',
+    border: 'none',
+    fontSize: '15px',
+    fontWeight: '600',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease',
+    boxShadow: '0 4px 15px rgba(0,0,0,0.2)'
+  },
+
+  // Stats Section
+  statsSection: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
+    gap: '20px',
+    padding: '0 20px',
+    marginBottom: '30px'
+  },
+
+  statCard: {
+    background: 'rgba(255, 255, 255, 0.98)',
+    borderRadius: '20px',
+    padding: '25px',
+    display: 'flex',
+    gap: '20px',
+    boxShadow: '0 8px 30px rgba(0,0,0,0.1)',
+    transition: 'all 0.3s ease',
+    cursor: 'pointer'
+  },
+
+  statIconWrapper: {
+    width: '70px',
+    height: '70px',
+    borderRadius: '16px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: 'linear-gradient(135deg, #4caf50 0%, #45a049 100%)',
+    color: 'white',
+    boxShadow: '0 6px 20px rgba(76, 175, 80, 0.3)',
+    flexShrink: 0
+  },
+
+  statContent: {
+    flex: 1
+  },
+
+  statValue: {
+    fontSize: '28px',
+    fontWeight: '700',
+    color: '#333',
+    marginBottom: '5px'
+  },
+
+  statLabel: {
+    fontSize: '13px',
+    color: '#666',
+    marginBottom: '10px'
+  },
+
+  statProgress: {
+    height: '6px',
+    background: '#f0f0f0',
+    borderRadius: '3px',
+    overflow: 'hidden'
+  },
+
+  statProgressBar: {
+    height: '100%',
+    borderRadius: '3px',
+    transition: 'width 0.6s ease'
+  },
+
+  // Main Content
+  mainContent: {
+    maxWidth: '1200px',
+    margin: '0 auto',
+    padding: '0 20px'
+  },
+
+  sectionHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: '30px',
+    background: 'rgba(255, 255, 255, 0.98)',
+    padding: '30px',
+    borderRadius: '20px',
+    boxShadow: '0 8px 30px rgba(0,0,0,0.1)'
+  },
+
+  sectionTitle: {
+    fontSize: '28px',
+    fontWeight: '700',
+    color: '#333',
+    margin: '0 0 8px 0'
+  },
+
+  sectionSubtitle: {
+    fontSize: '14px',
+    color: '#666',
+    margin: 0
+  },
+
+  langSelector: {
+    padding: '10px 16px',
+    borderRadius: '10px',
+    border: '2px solid #e0e0e0',
+    fontSize: '14px',
+    fontWeight: '600',
+    cursor: 'pointer',
+    background: 'white',
+    transition: 'all 0.3s ease'
+  },
+
+  // Course Cards
+  courseCard: {
+    background: 'rgba(255, 255, 255, 0.98)',
+    borderRadius: '20px',
+    marginBottom: '20px',
+    boxShadow: '0 8px 30px rgba(0,0,0,0.1)',
+    overflow: 'hidden',
+    transition: 'all 0.3s ease',
+    border: '2px solid transparent'
+  },
+
+  courseCardHeader: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: '25px 30px',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease'
+  },
+
+  courseLeft: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '20px',
+    flex: 1
+  },
+
+  courseNumber: {
+    width: '60px',
+    height: '60px',
+    borderRadius: '15px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: 'white',
+    fontSize: '24px',
+    fontWeight: '700',
+    boxShadow: '0 6px 20px rgba(0,0,0,0.15)',
+    flexShrink: 0
+  },
+
+  courseTitleSection: {
+    flex: 1
+  },
+
+  courseTitle: {
+    fontSize: '22px',
+    fontWeight: '700',
+    color: '#333',
+    margin: '0 0 5px 0',
+    display: 'flex',
+    alignItems: 'center'
+  },
+
+  courseSubtitle: {
+    fontSize: '13px',
+    color: '#666',
+    margin: 0
+  },
+
+  courseRight: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '15px'
+  },
+
+  courseStatus: {
+    display: 'flex',
+    alignItems: 'center'
+  },
+
+  statusBadge: {
+    padding: '8px 16px',
+    borderRadius: '20px',
+    fontSize: '12px',
+    fontWeight: '600',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '6px'
+  },
+
+  courseBody: {
+    padding: '0 30px 30px 30px',
+    borderTop: '1px solid rgba(0,0,0,0.08)'
+  },
+
+  courseDescription: {
+    marginTop: '25px',
+    marginBottom: '25px'
+  },
+
+  descriptionBox: {
+    background: 'linear-gradient(135deg, rgba(102, 126, 234, 0.05) 0%, rgba(118, 75, 162, 0.05) 100%)',
+    padding: '20px',
+    borderRadius: '12px',
+    marginBottom: '20px',
+    border: '1px solid rgba(102, 126, 234, 0.1)'
+  },
+
+  descBoxTitle: {
+    fontSize: '16px',
+    fontWeight: '700',
+    color: '#333',
+    margin: '0 0 10px 0'
+  },
+
+  descBoxText: {
+    fontSize: '14px',
+    color: '#555',
+    lineHeight: '1.6',
+    margin: 0
+  },
+
+  courseMetrics: {
+    display: 'grid',
+    gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+    gap: '15px'
+  },
+
+  metricItem: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    padding: '15px',
+    background: 'white',
+    borderRadius: '12px',
+    border: '1px solid #f0f0f0'
+  },
+
+  metricLabel: {
+    fontSize: '12px',
+    color: '#666',
+    marginBottom: '3px'
+  },
+
+  metricValue: {
+    fontSize: '16px',
+    fontWeight: '700',
+    color: '#333'
+  },
+
+  courseActions: {
+    display: 'flex',
+    gap: '15px',
+    marginTop: '20px'
+  },
+
+  primaryActionBtn: {
+    flex: 1,
+    padding: '15px 30px',
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    color: 'white',
+    border: 'none',
+    borderRadius: '12px',
+    fontSize: '16px',
+    fontWeight: '700',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '10px',
+    transition: 'all 0.3s ease',
+    boxShadow: '0 6px 20px rgba(102, 126, 234, 0.3)'
+  },
+
+  secondaryActionBtn: {
+    flex: 1,
+    padding: '15px 30px',
+    background: 'white',
+    color: '#667eea',
+    border: '2px solid #667eea',
+    borderRadius: '12px',
+    fontSize: '16px',
+    fontWeight: '700',
+    cursor: 'pointer',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: '10px',
+    transition: 'all 0.3s ease'
+  },
+
+  // Footer
+  footer: {
+    textAlign: 'center',
+    padding: '30px 20px',
+    color: 'rgba(255,255,255,0.9)'
+  },
+
+  footerText: {
+    margin: 0,
+    fontSize: '14px',
+    fontWeight: '500'
+  }
+};
+  },
+  langDropdown: {
+    padding: '8px 15px',
+    borderRadius: '8px',
+    border: '2px solid #ddd',
+    fontSize: '14px',
+    cursor: 'pointer'
+  },
+  courseCard: {
+    border: '2px solid #e0e0e0',
+    borderRadius: '12px',
+    marginBottom: '20px',
+    overflow: 'hidden',
+    transition: 'all 0.3s ease'
+  },
+  courseHeader: {
+    padding: '20px',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    cursor: 'pointer',
+    background: '#f8f9fa',
+    transition: 'background 0.3s ease',
+    ':hover': { background: '#e9ecef' }
+  },
+  courseHeaderLeft: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '15px'
+  },
+  courseBadge: {
+    width: '50px',
+    height: '50px',
+    borderRadius: '12px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    color: 'white',
+    fontSize: '24px',
+    fontWeight: '700'
+  },
+  courseTitle: {
+    margin: 0,
+    fontSize: '20px',
+    color: '#333',
+    fontWeight: '700'
+  },
+  courseSubtitle: {
+    margin: '5px 0 0 0',
+    fontSize: '13px',
+    color: '#666'
+  },
+  courseHeaderRight: {
+    fontSize: '20px',
+    color: '#666'
+  },
+  courseBody: {
+    padding: '25px',
+    background: 'white',
+    borderTop: '2px solid #e0e0e0'
+  },
+  courseDesc: {
+    fontSize: '15px',
+    color: '#555',
+    marginBottom: '20px',
+    lineHeight: '1.6'
+  },
+  courseStats: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '20px',
+    marginBottom: '20px'
+  },
+  courseStat: {
+    display: 'flex',
+    alignItems: 'center',
+    fontSize: '14px',
+    color: '#555'
+  },
+  startBtn: {
+    width: '100%',
+    padding: '14px',
+    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+    color: 'white',
+    border: 'none',
+    borderRadius: '10px',
+    fontSize: '16px',
+    fontWeight: '600',
+    cursor: 'pointer',
+    transition: 'all 0.3s ease',
+    ':hover': {
+      transform: 'translateY(-2px)',
+      boxShadow: '0 8px 20px rgba(102, 126, 234, 0.4)'
+    }
+  },
+  footer: {
+    background: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: '16px',
+    padding: '20px',
+    textAlign: 'center',
+    boxShadow: '0 8px 32px rgba(0,0,0,0.1)'
+  },
+  footerText: {
+    margin: 0,
+    fontSize: '14px',
+    color: '#666'
+  }
+};
+
+export default Dashboard;
+

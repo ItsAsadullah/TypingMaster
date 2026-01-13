@@ -1,8 +1,9 @@
 import React from 'react';
 
-const VisualKeyboard = ({ activeKey, pressedKey, isCorrect }) => {
+const VisualKeyboard = ({ activeKey, pressedKey, isCorrect, wrongKey }) => {
   const targetKey = activeKey?.toLowerCase() || '';
   const userKey = pressedKey?.toLowerCase() || '';
+  const errorKey = wrongKey?.toLowerCase() || '';
 
   // ফুল কিবোর্ড লেআউট
   const rows = [
@@ -19,21 +20,50 @@ const VisualKeyboard = ({ activeKey, pressedKey, isCorrect }) => {
       { k: 'Shift', w: 2.4, l: 'Shift' }, { k: 'z', w: 1 }, { k: 'x', w: 1 }, { k: 'c', w: 1 }, { k: 'v', w: 1 }, { k: 'b', w: 1 }, { k: 'n', w: 1 }, { k: 'm', w: 1 }, { k: ',', w: 1 }, { k: '.', w: 1 }, { k: '/', w: 1 }, { k: 'Shift', w: 2.4, l: 'Shift' }
     ],
     [
-      { k: 'Ctrl', w: 1.5 }, { k: 'Win', w: 1.2, l: '❖' }, { k: 'Alt', w: 1.2 }, { k: ' ', w: 6, l: '' }, { k: 'Alt', w: 1.2 }, { k: 'Win', w: 1.2, l: '❖' }, { k: 'Menu', w: 1.2, l: '≡' }, { k: 'Ctrl', w: 1.5 }
+      { k: 'Ctrl', w: 1.5 }, { k: 'Win', w: 1.2, l: '❖' }, { k: 'Alt', w: 1.2 }, { k: 'Space', w: 6, l: '' }, { k: 'Alt', w: 1.2 }, { k: 'Win', w: 1.2, l: '❖' }, { k: 'Menu', w: 1.2, l: '≡' }, { k: 'Ctrl', w: 1.5 }
     ]
   ];
 
+  // Key matching helper - special keys handle
+  const matchKey = (keyboardKey, checkKey) => {
+    if (!checkKey) return false;
+    const k = keyboardKey.toLowerCase();
+    const c = checkKey.toLowerCase();
+    
+    // Space key
+    if ((k === 'space' || k === ' ') && (c === 'space' || c === ' ')) return true;
+    // Backspace
+    if (k === 'backspace' && c === 'backspace') return true;
+    // Enter
+    if (k === 'enter' && (c === 'enter' || c === '\n')) return true;
+    // Tab
+    if (k === 'tab' && (c === 'tab' || c === '\t')) return true;
+    // Caps Lock
+    if (k === 'capslock' && c === 'capslock') return true;
+    // Shift
+    if (k === 'shift' && c === 'shift') return true;
+    // Ctrl
+    if (k === 'ctrl' && c === 'ctrl') return true;
+    // Alt
+    if (k === 'alt' && c === 'alt') return true;
+    // Regular keys
+    return k === c;
+  };
+
   // কি কালার লজিক
   const getKeyStyle = (keyLabel) => {
-    const k = keyLabel.toLowerCase();
+    // ১. ভুল কী - Red থাকবে যতক্ষণ সঠিক না চাপে
+    if (errorKey && matchKey(keyLabel, errorKey)) {
+      return { bg: '#ef5350', border: '#c62828', color: '#fff' };
+    }
     
-    // ১. টার্গেট কি (যেটা চাপতে হবে) - নীল বর্ডার/হালকা নীল
-    if (k === targetKey || (targetKey === ' ' && k === ' ')) {
+    // ২. টার্গেট কি (যেটা চাপতে হবে) - নীল বর্ডার/হালকা নীল
+    if (matchKey(keyLabel, targetKey)) {
       return { bg: '#e3f2fd', border: '#1e88e5', color: '#1565c0' };
     }
 
-    // ২. ইউজার যেটা চেপেছে
-    if (k === userKey || (userKey === ' ' && k === ' ')) {
+    // ৩. ইউজার যেটা চেপেছে (flash effect)
+    if (userKey && matchKey(keyLabel, userKey)) {
       if (isCorrect) {
         return { bg: '#2ecc71', border: '#27ae60', color: '#fff' }; // সঠিক হলে সবুজ
       } else {
@@ -41,7 +71,7 @@ const VisualKeyboard = ({ activeKey, pressedKey, isCorrect }) => {
       }
     }
 
-    // ৩. সাধারণ অবস্থা
+    // ৪. সাধারণ অবস্থা
     return { bg: '#fff', border: '#ccc', color: '#444' };
   };
 
@@ -60,12 +90,12 @@ const VisualKeyboard = ({ activeKey, pressedKey, isCorrect }) => {
                     flex: keyObj.w,
                     background: style.bg,
                     color: style.color,
-                    borderColor: style.border,
+                    border: `1px solid ${style.border}`,
                     boxShadow: style.bg === '#fff' ? '0 3px 0 #bbb' : 'none',
                     transform: style.bg !== '#fff' ? 'translateY(2px)' : 'none'
                   }}
                 >
-                  {keyObj.l || keyObj.k.toUpperCase()}
+                  {keyObj.l !== undefined ? keyObj.l : keyObj.k.toUpperCase()}
                 </div>
               );
             })}
